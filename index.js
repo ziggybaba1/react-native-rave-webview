@@ -6,8 +6,8 @@
  * @flow
  */
 import React, {Component} from 'react';
-import {WebView, Modal, Text, View, TouchableOpacity, ActivityIndicator} from 'react-native';   
-  
+import { Modal, Text, View, TouchableOpacity, ActivityIndicator,SafeAreaView} from 'react-native';   
+  import { WebView } from "react-native-webview"; 
 export default class Rave extends Component {
     constructor(props){
         super(props);
@@ -27,6 +27,7 @@ Rave ={
                       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
                       <!-- Fonts -->
                       <link rel="dns-prefetch" href="//fonts.gstatic.com">
+                      <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
                       <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
                       <title>SUBSCRIPTION</title>
               </head>
@@ -50,6 +51,7 @@ Rave ={
                           metaname: "${this.props.billingName}",
                           metavalue: "${this.props.billingMobile}"
                       }],
+                      payment_options: "card",
                       onclose: function() {
                         var resp = {event:'cancelled'};
                         postMessage(JSON.stringify(resp))
@@ -61,16 +63,17 @@ Rave ={
                               response.tx.chargeResponseCode == "0"
                           ) {
                                 var resp = {event:'successful', transactionRef:txref};
-                                postMessage(JSON.stringify(resp))
+                                window.ReactNativeWebView.postMessage(JSON.stringify(resp))
                           } else {
                             var resp = {event:'error'};
-                            postMessage(JSON.stringify(resp))
+                            window.ReactNativeWebView.postMessage(JSON.stringify(resp))
                           }
           
                           x.close(); 
                       }
                   });
               }
+              
           </script>
               </body>
       </html> 
@@ -102,12 +105,10 @@ Rave ={
 
 render() {
     return (
-      <View>
-          <Modal 
-              visible={this.state.showModal}
-              animationType="slide"
-              transparent={false}>
+     <SafeAreaView style={{ flex: 1,marginTop: 5 }}>
+        <SafeAreaView style={{ flex: 1,marginTop: 5 }}>
                   <WebView
+                  style={[{ flex: 1 }]}
                       javaScriptEnabled={true}
                       javaScriptEnabledAndroid={true}
                       originWhitelist={['*']}
@@ -124,11 +125,8 @@ render() {
                             <ActivityIndicator size="large" color={this.props.ActivityIndicatorColor} />
                           </View>
                         }
-            </Modal>
-             <TouchableOpacity style={this.props.btnStyles} onPress={()=> this.setState({showModal:true})}>
-                <Text style={this.props.textStyles}  >{this.props.buttonText}</Text>
-            </TouchableOpacity>
-      </View>
+     </SafeAreaView>
+     </SafeAreaView>
     );
   }
 }
@@ -139,4 +137,3 @@ Rave.defaultProps = {
   amount:10,
   ActivityIndicatorColor:'green'
 }
- 
